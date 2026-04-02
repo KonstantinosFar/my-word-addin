@@ -9,29 +9,38 @@ async function scanAndHighlightLinks() {
     statusDiv.innerText = "Scanning...";
 
     await Word.run(async (context) => {
-        // Search the document for anything starting with http or https
-        // Using Word's wildcard search syntax
-        const searchResults = context.document.body.search("<http*>", { matchWildcards: true });
-        searchResults.load("items");
+        const body = context.document.body;
+        body.load("text");
         await context.sync();
+
+        // 1. Use pure JS Regex to find the FULL URLs instead of Word's wildcard search
+        const text = body.text;
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+        const urls = text.match(urlRegex);
+
+        if (!urls) {
+            statusDiv.innerText = "No links found.";
+            return;
+        }
 
         let brokenCount = 0;
 
-        for (let i = 0; i < searchResults.items.length; i++) {
-            const range = searchResults.items[i];
-            range.load("text");
-            await context.sync();
+        // 2. Loop through the full URLs
+        for (let url of urls) {
+            const cleanUrl = url.replace(/[.,;!?]$/, '').trim();
+            statusDiv.innerText = `Checking: ${cleanUrl}`;
 
-            // Clean up the extracted text (remove trailing punctuation if any)
-            const urlText = range.text.replace(/[.,;!?]$/, '').trim();
-            
-            statusDiv.innerText = `Checking: ${urlText}`;
-
-            // Send to your Azure backend
-            const isBroken = await checkUrlWithAzure(urlText);
+            const isBroken = await checkUrlWithAzure(cleanUrl);
 
             if (isBroken) {
-                range.font.highlightColor = "red";
+                // 3. Search for the EXACT full string to highlight it all
+                const searchResults = body.search(cleanUrl, { matchCase: false });
+                searchResults.load("items");
+                await context.sync();
+
+                for (let i = 0; i < searchResults.items.length; i++) {
+                    searchResults.items[i].font.highlightColor = "red";
+                }
                 brokenCount++;
             }
         }
@@ -47,7 +56,6 @@ async function scanAndHighlightLinks() {
 // Function to call your Azure Web App
 async function checkUrlWithAzure(url) {
     try {
-        // REPLACE THIS URL WITH YOUR AZURE WEB APP URL
         const azureEndpoint = "https://wordadd.azurewebsites.net/api/check-link";
         
         const response = await fetch(azureEndpoint, {
@@ -57,9 +65,11 @@ async function checkUrlWithAzure(url) {
         });
         
         const data = await response.json();
-        return data.broken;
+        
+        // This makes sure it works whether your backend sends { broken: true } or { status: "broken" }
+        return data.broken === true || data.status === "broken";
     } catch (e) {
         console.error("Backend error", e);
-        return true; // Treat as broken if backend fails
+        return true; 
     }
 }
