@@ -57,7 +57,7 @@ async function scanAndHighlightLinks() {
 async function checkUrlWithAzure(url) {
     try {
         // 1. Updated to your new Function URL
-        const azureEndpoint = "https://wordlinkfunc-cede.azurewebsites.net/api/check-link";
+        const azureEndpoint = "https://wordlinkfunc-cede-faccezaka0gxckdk.canadacentral-01.azurewebsites.net/api/check-link";
         
         const response = await fetch(azureEndpoint, {
             method: "POST",
