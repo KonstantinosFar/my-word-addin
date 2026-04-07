@@ -71,13 +71,22 @@ async function scanAndHighlightLinks() {
 async function checkUrlWithAzure(url) {
     try {
         const azureEndpoint = "https://wordlinkfunc-cede-faccezaka0gxckdk.canadacentral-01.azurewebsites.net/api/check-link";
+        
+        // REPLACE 'YOUR_KEY_HERE' with the secret key you just copied
+        const functionKey = "m9iyydRH2rs5-fGo3YI0a0MyWwWVkWq3zf637SeroPKRAzFuPTc5LQ==";
+
         const response = await fetch(azureEndpoint, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: { 
+                "Content-Type": "application/json",
+                "x-functions-key": functionKey // This is the secret password
+            },
             body: JSON.stringify({ url: url })
         });
+        
         const data = await response.json();
         return data.ok === false; 
+
     } catch (e) {
         return false; 
     }
