@@ -53,10 +53,11 @@ async function scanAndHighlightLinks() {
     });
 }
 
-// Function to call your Azure Web App
+// Function to call your Azure Function
 async function checkUrlWithAzure(url) {
     try {
-        const azureEndpoint = "https://wordlinkfunc-cede-faccezaka0gxckdk.canadacentral-01.azurewebsites.net/api/check-link";
+        // 1. Updated to your new Function URL
+        const azureEndpoint = "https://wordlinkfunc-cede.azurewebsites.net/api/check-link";
         
         const response = await fetch(azureEndpoint, {
             method: "POST",
@@ -66,10 +67,13 @@ async function checkUrlWithAzure(url) {
         
         const data = await response.json();
         
-        // This makes sure it works whether your backend sends { broken: true } or { status: "broken" }
-        return data.broken === true || data.status === "broken";
+        // 2. Logic change: In our Function code, 'ok: false' means the link is broken
+        // So we return TRUE (it is broken) if data.ok is false.
+        return data.ok === false; 
+
     } catch (e) {
         console.error("Backend error", e);
+        // If the server fails to respond, we treat it as broken (highlights red)
         return true; 
     }
 }
