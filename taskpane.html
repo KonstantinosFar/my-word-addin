@@ -5,62 +5,23 @@
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <title>Link Checker</title>
     <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js" type="text/javascript"></script>
-    <script src="taskpane.js" type="text/javascript"></script>
+    <script src="taskpane.js?v=3" type="text/javascript"></script>
     <style>
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            padding: 20px; 
-            color: #333;
-        }
-        h3 { color: #222; }
-        button { 
-            background-color: #0078d4; 
-            color: white; 
-            border: none; 
-            padding: 12px 20px; 
-            cursor: pointer; 
-            margin-top: 10px; 
-            width: 100%;
-            font-weight: 600;
-            border-radius: 2px;
-        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; color: #333; }
+        button { background-color: #0078d4; color: white; border: none; padding: 12px 20px; cursor: pointer; width: 100%; font-weight: 600; }
         button:hover { background-color: #005a9e; }
-        #status { 
-            margin-top: 15px; 
-            font-size: 14px; 
-            font-weight: 500;
-        }
-        
-        /* New styles for the broken links list */
-        #broken-links-container {
-            margin-top: 25px;
-            border-top: 1px solid #ddd;
-            padding-top: 15px;
-        }
-        #broken-links-list {
-            padding-left: 20px;
-            margin-top: 10px;
-        }
-        #broken-links-list li {
-            margin-bottom: 8px;
-            font-size: 13px;
-        }
-        #broken-links-list a {
-            color: #d83b01; /* A clear "alert" red/orange */
-            text-decoration: none;
-            word-break: break-all;
-        }
-        #broken-links-list a:hover {
-            text-decoration: underline;
-        }
+        #status { margin-top: 15px; font-size: 14px; font-weight: 500; }
+        #broken-links-container { margin-top: 20px; border-top: 1px solid #ddd; padding-top: 10px; }
+        #broken-links-list { padding-left: 20px; }
+        #broken-links-list li { margin-bottom: 10px; font-size: 13px; }
+        #broken-links-list a { color: #d83b01; text-decoration: none; word-break: break-all; font-weight: bold; }
+        #broken-links-list a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
     <h3>Broken Link Checker</h3>
-    <p>Click below to scan this document for URLs and highlight the broken ones in red.</p>
-    
+    <p>Scans document for URLs and highlights broken ones in red.</p>
     <button id="checkLinksBtn">Scan Document</button>
-    
     <div id="status"></div>
 
     <div id="broken-links-container" style="display: none;">
