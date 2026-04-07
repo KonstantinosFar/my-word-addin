@@ -64,16 +64,21 @@ async function checkUrlWithAzure(url) {
             body: JSON.stringify({ url: url })
         });
         
+        if (!response.ok) {
+            console.log("Server responded with error status: " + response.status);
+            return false; // Don't highlight red if the server itself is down
+        }
+
         const data = await response.json();
-        
-        // FIX IS HERE: 
-        // We want to highlight RED (return true) ONLY IF data.ok is false.
+        console.log("Check result for " + url + ":", data);
+
+        // A link is BROKEN only if data.ok is explicitly false
         return data.ok === false; 
 
     } catch (e) {
-        console.error("Backend error", e);
-        // If the server itself crashes, we return false so it doesn't 
-        // accidentally highlight everything red.
+        console.error("Connection error to Azure:", e);
+        // Change this to FALSE for now. 
+        // If it's TRUE, any connection hiccup turns the whole document red.
         return false; 
     }
 }
