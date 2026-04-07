@@ -6,14 +6,19 @@ Office.onReady((info) => {
 
 async function scanAndHighlightLinks() {
     const statusDiv = document.getElementById("status");
+    const listContainer = document.getElementById("broken-links-container");
+    const listUl = document.getElementById("broken-links-list");
+
+    // Reset UI for a new scan
     statusDiv.innerText = "Scanning...";
+    listUl.innerHTML = ""; 
+    listContainer.style.display = "none";
 
     await Word.run(async (context) => {
         const body = context.document.body;
         body.load("text");
         await context.sync();
 
-        // 1. Use pure JS Regex to find the FULL URLs instead of Word's wildcard search
         const text = body.text;
         const urlRegex = /(https?:\/\/[^\s]+)/g;
         const urls = text.match(urlRegex);
@@ -25,7 +30,6 @@ async function scanAndHighlightLinks() {
 
         let brokenCount = 0;
 
-        // 2. Loop through the full URLs
         for (let url of urls) {
             const cleanUrl = url.replace(/[.,;!?]$/, '').trim();
             statusDiv.innerText = `Checking: ${cleanUrl}`;
@@ -33,23 +37,34 @@ async function scanAndHighlightLinks() {
             const isBroken = await checkUrlWithAzure(cleanUrl);
 
             if (isBroken) {
-                // 3. Search for the EXACT full string to highlight it all
+                brokenCount++;
+                
+                // Show the container if it's the first broken link
+                listContainer.style.display = "block";
+
+                // ADD TO SIDEBAR LIST: Create a clickable link item
+                const li = document.createElement("li");
+                const a = document.createElement("a");
+                a.href = cleanUrl;
+                a.target = "_blank"; // Opens in new tab
+                a.innerText = cleanUrl;
+                a.style.color = "red";
+                
+                li.appendChild(a);
+                listUl.appendChild(li);
+
+                // HIGHLIGHT IN DOCUMENT
                 const searchResults = body.search(cleanUrl, { matchCase: false });
                 searchResults.load("items");
                 await context.sync();
-
                 for (let i = 0; i < searchResults.items.length; i++) {
                     searchResults.items[i].font.highlightColor = "red";
                 }
-                brokenCount++;
             }
         }
 
         await context.sync();
         statusDiv.innerText = `Done! Found ${brokenCount} broken link(s).`;
-    }).catch(function (error) {
-        console.log("Error: " + error);
-        statusDiv.innerText = "An error occurred.";
     });
 }
 
