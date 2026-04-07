@@ -56,7 +56,7 @@ async function scanAndHighlightLinks() {
 // Function to call your Azure Web App
 async function checkUrlWithAzure(url) {
     try {
-        const azureEndpoint = "https://wordadd.azurewebsites.net/api/check-link";
+        const azureEndpoint = "https://wordlinkfunc-cede-faccezaka0gxckdk.canadacentral-01.azurewebsites.net/api/check-link";
         
         const response = await fetch(azureEndpoint, {
             method: "POST",
