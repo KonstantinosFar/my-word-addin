@@ -56,7 +56,6 @@ async function scanAndHighlightLinks() {
 // Function to call your Azure Function
 async function checkUrlWithAzure(url) {
     try {
-        // 1. Updated to your new Function URL
         const azureEndpoint = "https://wordlinkfunc-cede-faccezaka0gxckdk.canadacentral-01.azurewebsites.net/api/check-link";
         
         const response = await fetch(azureEndpoint, {
@@ -67,13 +66,14 @@ async function checkUrlWithAzure(url) {
         
         const data = await response.json();
         
-        // 2. Logic change: In our Function code, 'ok: false' means the link is broken
-        // So we return TRUE (it is broken) if data.ok is false.
+        // FIX IS HERE: 
+        // We want to highlight RED (return true) ONLY IF data.ok is false.
         return data.ok === false; 
 
     } catch (e) {
         console.error("Backend error", e);
-        // If the server fails to respond, we treat it as broken (highlights red)
-        return true; 
+        // If the server itself crashes, we return false so it doesn't 
+        // accidentally highlight everything red.
+        return false; 
     }
 }
