@@ -65,7 +65,7 @@ async function jumpToLinkInDoc(linkText) {
  */
 async function checkUrlWithAzure(url) {
     try {
-        const azureEndpoint = "https://wordlinkfunc-cede-faccezaka0gxckdk.canadacentral-01.azurewebsites.net/api/check-link";
+        const azureEndpoint = "wordlinkfunc-cede-faccezaka0gxckdk.canadacentral-01.azurewebsites.net";
 
         // 1. Paste your 'default' key from the Azure App Keys screen here
         // Using your verified key
