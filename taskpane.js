@@ -107,25 +107,18 @@ async function jumpToLinkInDoc(linkText) {
  */
 async function checkUrlWithAzure(url) {
     try {
-        const azureEndpoint = "https://wordlinkfunc-cede-faccezaka0gxckdk.canadacentral-01.azurewebsites.net/api/check-link";
-        
-        // Using your verified key
-        const functionKey = "m9iyydRH2rs5-fGo3YI0a0MyWwWVkWq3zf637SeroPKRAzFuPTc5LQ=="; 
+        // We use the relative path. Azure handles the security behind the scenes!
+        const azureEndpoint = "/api/check-link"; 
 
         const response = await fetch(azureEndpoint, {
             method: "POST",
             headers: { 
-                "Content-Type": "application/json",
-                "x-functions-key": functionKey 
+                "Content-Type": "application/json"
+                // NO MORE x-functions-key! It is now private in Azure.
             },
             body: JSON.stringify({ url: url })
         });
         
-        if (response.status === 401) {
-            console.error("Auth failed. Key mismatch.");
-            return false;
-        }
-
         const data = await response.json();
         return data.ok === false; 
 
