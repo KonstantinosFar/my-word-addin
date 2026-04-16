@@ -9,6 +9,7 @@ async function scanAndHighlightLinks() {
     const listContainer = document.getElementById("broken-links-container");
     const listUl = document.getElementById("broken-links-list");
 
+    // Reset UI
     statusDiv.innerText = "Scanning...";
     listUl.innerHTML = ""; 
     listContainer.style.display = "none";
@@ -28,15 +29,18 @@ async function scanAndHighlightLinks() {
         }
 
         let brokenCount = 0;
+
         for (let url of urls) {
             const cleanUrl = url.replace(/[.,;!?]$/, '').trim();
             statusDiv.innerText = `Checking: ${cleanUrl}`;
 
+            // Calls your Middle-Man in the /api/ folder
             const isBroken = await checkUrlWithAzure(cleanUrl);
 
             if (isBroken) {
                 brokenCount++;
                 listContainer.style.display = "block";
+                
                 const li = document.createElement("li");
                 li.style.marginBottom = "10px";
 
@@ -47,6 +51,7 @@ async function scanAndHighlightLinks() {
                 a.style.textDecoration = "underline";
                 a.style.cursor = "pointer";
 
+                // Jump to the link in the document when clicked
                 a.onclick = async (e) => {
                     e.preventDefault();
                     await jumpToLinkInDoc(cleanUrl);
@@ -55,6 +60,7 @@ async function scanAndHighlightLinks() {
                 li.appendChild(a);
                 listUl.appendChild(li);
 
+                // Highlight the link in the Word document
                 const searchResults = body.search(cleanUrl, { matchCase: false });
                 searchResults.load("items");
                 await context.sync();
@@ -63,28 +69,34 @@ async function scanAndHighlightLinks() {
                 }
             }
         }
+
         await context.sync();
         statusDiv.innerText = `Done! Found ${brokenCount} broken link(s).`;
+        
     }).catch(function (error) {
         console.error(error);
-        statusDiv.innerText = "Error scanning links.";
+        statusDiv.innerText = "Error: Check browser console (F12).";
     });
 }
 
+// Function to navigate Word to the broken link
 async function jumpToLinkInDoc(linkText) {
     await Word.run(async (context) => {
         const results = context.document.body.search(linkText, { matchCase: false });
         results.load("items");
         await context.sync();
+
         if (results.items.length > 0) {
-            results.items[0].select();
+            results.items[0].select(); // This scrolls to the link
         }
+    }).catch(function (error) {
+        console.error("Jump error: " + error.message);
     });
 }
 
 async function checkUrlWithAzure(url) {
     try {
-        // Now using your relative API path. NO SECRET KEY HERE!
+        // Points to the Lemon-Pond internal API
         const response = await fetch("/api/check-link", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -93,6 +105,7 @@ async function checkUrlWithAzure(url) {
         
         const data = await response.json();
         return data.ok === false; 
+
     } catch (e) {
         console.error("Connection error:", e);
         return false; 
