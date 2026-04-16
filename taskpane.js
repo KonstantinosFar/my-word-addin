@@ -4,15 +4,11 @@ Office.onReady((info) => {
     }
 });
 
-/**
- * Scans the document for links and checks them via Azure
- */
 async function scanAndHighlightLinks() {
     const statusDiv = document.getElementById("status");
     const listContainer = document.getElementById("broken-links-container");
     const listUl = document.getElementById("broken-links-list");
 
-    // Reset UI
     statusDiv.innerText = "Scanning...";
     listUl.innerHTML = ""; 
     listContainer.style.display = "none";
@@ -32,7 +28,6 @@ async function scanAndHighlightLinks() {
         }
 
         let brokenCount = 0;
-
         for (let url of urls) {
             const cleanUrl = url.replace(/[.,;!?]$/, '').trim();
             statusDiv.innerText = `Checking: ${cleanUrl}`;
@@ -41,22 +36,17 @@ async function scanAndHighlightLinks() {
 
             if (isBroken) {
                 brokenCount++;
-                
-                // Show container and add to list immediately
                 listContainer.style.display = "block";
-                
                 const li = document.createElement("li");
                 li.style.marginBottom = "10px";
 
-                // Create the clickable "Navigation" link
                 const a = document.createElement("a");
-                a.href = "#"; // Prevent page refresh
+                a.href = "#"; 
                 a.innerText = "🔍 " + cleanUrl;
-                a.style.color = "#d13438"; // Microsoft Red
+                a.style.color = "#d13438"; 
                 a.style.textDecoration = "underline";
                 a.style.cursor = "pointer";
 
-                // This is the "Jump" trigger
                 a.onclick = async (e) => {
                     e.preventDefault();
                     await jumpToLinkInDoc(cleanUrl);
@@ -65,7 +55,6 @@ async function scanAndHighlightLinks() {
                 li.appendChild(a);
                 listUl.appendChild(li);
 
-                // Highlight in Word
                 const searchResults = body.search(cleanUrl, { matchCase: false });
                 searchResults.load("items");
                 await context.sync();
@@ -74,54 +63,36 @@ async function scanAndHighlightLinks() {
                 }
             }
         }
-
         await context.sync();
         statusDiv.innerText = `Done! Found ${brokenCount} broken link(s).`;
-        
     }).catch(function (error) {
         console.error(error);
-        statusDiv.innerText = "Error: Check browser console (F12).";
+        statusDiv.innerText = "Error scanning links.";
     });
 }
 
-/**
- * Scrolls the document to the first instance of the broken link
- */
 async function jumpToLinkInDoc(linkText) {
     await Word.run(async (context) => {
         const results = context.document.body.search(linkText, { matchCase: false });
         results.load("items");
         await context.sync();
-
         if (results.items.length > 0) {
-            // .select() highlights the text and scrolls the window to it
             results.items[0].select();
         }
-    }).catch(function (error) {
-        console.error("Jump error: " + error.message);
     });
 }
 
-/**
- * Communicates with your Azure Function
- */
 async function checkUrlWithAzure(url) {
     try {
-        // We use the relative path. Azure handles the security behind the scenes!
-        const azureEndpoint = "/api/check-link"; 
-
-        const response = await fetch(azureEndpoint, {
+        // Now using your relative API path. NO SECRET KEY HERE!
+        const response = await fetch("/api/check-link", {
             method: "POST",
-            headers: { 
-                "Content-Type": "application/json"
-                // NO MORE x-functions-key! It is now private in Azure.
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ url: url })
         });
         
         const data = await response.json();
         return data.ok === false; 
-
     } catch (e) {
         console.error("Connection error:", e);
         return false; 
