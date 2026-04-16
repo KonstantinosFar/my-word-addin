@@ -40,11 +40,16 @@ async function scanAndHighlightLinks() {
 }
 
 async function checkUrlWithAzure(url) {
+    const azureEndpoint = "https://wordlinkfunc-cede-faccezaka0gxckdk.canadacentral-01.azurewebsites.net/api/check-link";
+    const functionKey = "m9iyydRH2rs5-fGo3YI0a0MyWwWVkWq3zf637SeroPKRAzFuPTc5LQ==";
+
     try {
-        // This calls the file inside your /api folder
-        const response = await fetch("/api/check-link", {
+        const response = await fetch(azureEndpoint, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: { 
+                "Content-Type": "application/json",
+                "x-functions-key": functionKey 
+            },
             body: JSON.stringify({ url: url })
         });
         const data = await response.json();
