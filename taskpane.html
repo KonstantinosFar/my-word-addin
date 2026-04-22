@@ -6,13 +6,13 @@
     <title>Broken Link Checker</title>
     <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js" type="text/javascript"></script>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; padding: 15px; font-size: 14px; }
-        button { background-color: #0078d4; color: white; border: none; padding: 12px; cursor: pointer; width: 100%; font-weight: 600; }
+        body { font-family: 'Segoe UI', sans-serif; padding: 15px; background-color: #f4f4f4; }
+        h3 { color: #333; }
+        button { background-color: #0078d4; color: white; border: none; padding: 10px; cursor: pointer; width: 100%; font-weight: bold; }
         button:hover { background-color: #005a9e; }
-        #status { margin: 15px 0; font-size: 13px; color: #666; }
-        #broken-links-container { border-top: 1px solid #ccc; padding-top: 10px; }
-        #broken-links-list { padding-left: 0; list-style-type: none; font-size: 12px; word-break: break-all; }
-        h3 { margin-top: 0; }
+        #status { margin-top: 15px; font-style: italic; color: #555; }
+        #broken-links-container { margin-top: 20px; border-top: 1px solid #ddd; padding-top: 10px; }
+        #broken-links-list { padding-left: 0; list-style: none; word-wrap: break-word; }
     </style>
 </head>
 <body>
@@ -20,7 +20,7 @@
     <button id="checkLinksBtn">Scan Document</button>
     <div id="status">Ready</div>
     <div id="broken-links-container" style="display:none;">
-        <strong>Broken Links (Click to jump):</strong>
+        <strong>Broken Links (Click to find):</strong>
         <ul id="broken-links-list"></ul>
     </div>
     <script src="taskpane.js"></script>
