@@ -3,30 +3,24 @@
 <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <title>Link Checker</title>
+    <title>Broken Link Checker</title>
     <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js" type="text/javascript"></script>
-    <script src="taskpane.js?v=3" type="text/javascript"></script>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; color: #333; }
-        button { background-color: #0078d4; color: white; border: none; padding: 12px 20px; cursor: pointer; width: 100%; font-weight: 600; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 15px; }
+        button { background-color: #0078d4; color: white; border: none; padding: 10px 20px; cursor: pointer; width: 100%; }
         button:hover { background-color: #005a9e; }
-        #status { margin-top: 15px; font-size: 14px; font-weight: 500; }
-        #broken-links-container { margin-top: 20px; border-top: 1px solid #ddd; padding-top: 10px; }
-        #broken-links-list { padding-left: 20px; }
-        #broken-links-list li { margin-bottom: 10px; font-size: 13px; }
-        #broken-links-list a { color: #d83b01; text-decoration: none; word-break: break-all; font-weight: bold; }
-        #broken-links-list a:hover { text-decoration: underline; }
+        #status { margin-top: 15px; font-weight: bold; }
+        #broken-links-list { margin-top: 10px; color: red; }
     </style>
 </head>
 <body>
     <h3>Broken Link Checker</h3>
-    <p>Scans document for URLs and highlights broken ones in red.</p>
     <button id="checkLinksBtn">Scan Document</button>
-    <div id="status"></div>
-
-    <div id="broken-links-container" style="display: none;">
-        <p><strong>Broken Links Found:</strong></p>
+    <div id="status">Ready</div>
+    <div id="broken-links-container" style="display:none;">
+        <p>Broken Links Found:</p>
         <ul id="broken-links-list"></ul>
     </div>
+    <script src="taskpane.js"></script>
 </body>
 </html>
