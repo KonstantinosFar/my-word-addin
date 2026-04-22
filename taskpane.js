@@ -36,10 +36,28 @@ async function scanAndHighlightLinks() {
             if (isBroken) {
                 brokenCount++;
                 listContainer.style.display = "block";
+                
                 const li = document.createElement("li");
-                li.innerText = cleanUrl;
+                li.style.marginBottom = "8px";
+
+                // Create a clickable link in the sidebar
+                const a = document.createElement("a");
+                a.href = "#";
+                a.innerText = "🔍 " + cleanUrl;
+                a.style.color = "#d13438";
+                a.style.textDecoration = "underline";
+                a.style.cursor = "pointer";
+
+                // When clicked, jump to the location in Word
+                a.onclick = async (e) => {
+                    e.preventDefault();
+                    await jumpToLinkInDoc(cleanUrl);
+                };
+
+                li.appendChild(a);
                 listUl.appendChild(li);
 
+                // Initial highlight in red
                 const searchResults = body.search(cleanUrl);
                 searchResults.load("items");
                 await context.sync();
@@ -50,6 +68,22 @@ async function scanAndHighlightLinks() {
         }
         await context.sync();
         statusDiv.innerText = `Done! Found ${brokenCount} broken link(s).`;
+    });
+}
+
+// NEW FUNCTION: Scroll Word to the specific link
+async function jumpToLinkInDoc(linkText) {
+    await Word.run(async (context) => {
+        const results = context.document.body.search(linkText, { matchCase: false });
+        results.load("items");
+        await context.sync();
+
+        if (results.items.length > 0) {
+            // This selects the text and moves the document view to it
+            results.items[0].select();
+        }
+    }).catch(function (error) {
+        console.error("Navigation error: " + error.message);
     });
 }
 
@@ -69,7 +103,6 @@ async function checkUrlWithAzure(url) {
         const data = await response.json();
         return data.ok === false;
     } catch (e) {
-        console.error("Error checking URL:", e);
         return false;
     }
 }
