@@ -40,16 +40,15 @@ async function scanAndHighlightLinks() {
                 const li = document.createElement("li");
                 li.style.marginBottom = "10px";
 
-                // Create the clickable 'Jump' link
+                // Create the clickable link for the sidebar
                 const a = document.createElement("a");
                 a.href = "#";
-                a.innerText = "🔍 " + cleanUrl;
+                a.innerText = "➡️ " + cleanUrl;
                 a.style.color = "#0078d4";
                 a.style.textDecoration = "underline";
                 a.style.cursor = "pointer";
-                a.style.display = "block";
 
-                // The logic to scroll Word to the link
+                // Trigger the jump function on click
                 a.onclick = async (e) => {
                     e.preventDefault();
                     await jumpToLinkInDoc(cleanUrl);
@@ -58,7 +57,7 @@ async function scanAndHighlightLinks() {
                 li.appendChild(a);
                 listUl.appendChild(li);
 
-                // Highlight in the document as before
+                // Highlight the text in red immediately
                 const searchResults = body.search(cleanUrl);
                 searchResults.load("items");
                 await context.sync();
@@ -72,7 +71,7 @@ async function scanAndHighlightLinks() {
     });
 }
 
-// Function to move the Word cursor/view to the link
+// The function that scrolls Word to the link
 async function jumpToLinkInDoc(linkText) {
     await Word.run(async (context) => {
         const results = context.document.body.search(linkText, { matchCase: false });
@@ -80,8 +79,8 @@ async function jumpToLinkInDoc(linkText) {
         await context.sync();
 
         if (results.items.length > 0) {
-            // .select() highlights the text and scrolls the page to it
-            results.items[0].select(); 
+            // This selects the text and moves the view to it
+            results.items[0].select();
         }
     }).catch(function (error) {
         console.error("Navigation error: " + error.message);
@@ -89,6 +88,7 @@ async function jumpToLinkInDoc(linkText) {
 }
 
 async function checkUrlWithAzure(url) {
+    // Using your Canadian Azure Function endpoint
     const azureEndpoint = "https://wordlinkfunc-cede-faccezaka0gxckdk.canadacentral-01.azurewebsites.net/api/check-link";
     const functionKey = "m9iyydRH2rs5-fGo3YI0a0MyWwWVkWq3zf637SeroPKRAzFuPTc5LQ==";
 
