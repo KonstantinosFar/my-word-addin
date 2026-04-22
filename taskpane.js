@@ -38,17 +38,18 @@ async function scanAndHighlightLinks() {
                 listContainer.style.display = "block";
                 
                 const li = document.createElement("li");
-                li.style.marginBottom = "8px";
+                li.style.marginBottom = "10px";
 
-                // Create a clickable link in the sidebar
+                // Create the clickable 'Jump' link
                 const a = document.createElement("a");
                 a.href = "#";
                 a.innerText = "🔍 " + cleanUrl;
-                a.style.color = "#d13438";
+                a.style.color = "#0078d4";
                 a.style.textDecoration = "underline";
                 a.style.cursor = "pointer";
+                a.style.display = "block";
 
-                // When clicked, jump to the location in Word
+                // The logic to scroll Word to the link
                 a.onclick = async (e) => {
                     e.preventDefault();
                     await jumpToLinkInDoc(cleanUrl);
@@ -57,7 +58,7 @@ async function scanAndHighlightLinks() {
                 li.appendChild(a);
                 listUl.appendChild(li);
 
-                // Initial highlight in red
+                // Highlight in the document as before
                 const searchResults = body.search(cleanUrl);
                 searchResults.load("items");
                 await context.sync();
@@ -71,7 +72,7 @@ async function scanAndHighlightLinks() {
     });
 }
 
-// NEW FUNCTION: Scroll Word to the specific link
+// Function to move the Word cursor/view to the link
 async function jumpToLinkInDoc(linkText) {
     await Word.run(async (context) => {
         const results = context.document.body.search(linkText, { matchCase: false });
@@ -79,8 +80,8 @@ async function jumpToLinkInDoc(linkText) {
         await context.sync();
 
         if (results.items.length > 0) {
-            // This selects the text and moves the document view to it
-            results.items[0].select();
+            // .select() highlights the text and scrolls the page to it
+            results.items[0].select(); 
         }
     }).catch(function (error) {
         console.error("Navigation error: " + error.message);
